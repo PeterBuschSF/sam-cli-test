@@ -13,9 +13,15 @@ jobs:
       - name: check versions
         run: |
           docker --version
-          docker-compose --version || docker compose version || true
+          docker-compose --version
 
-      - name: Run a multi-line script
+      - name: test running and connecting to mockserver
         run: |
           docker pull mockserver/mockserver
           docker pull alpine
+          docker-compose up -d 
+          curl --retry 2 --retry-all-errors --retry-delay 5 -X PUT http://localhost:8080/mockserver/status
+          curl -X GET http://localhost:8080/hello
+          docker run --name alpine --rm --network test alpine \
+            curl -X GET http://mockserver:8080/hello
+          
