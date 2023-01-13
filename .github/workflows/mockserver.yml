@@ -64,11 +64,13 @@ jobs:
           sleep 10
 
           echo 'docker-base'
+          pwd
+          echo ${GITHUB_PATH}
           docker run --name docker-base -d -t \
             --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
             -v some-docker-certs-client:/certs/client:ro \
-            -v ./mockserver:/mockserver \
+            -v ${GITHUB_PATH}/mockserver:/mockserver \
             docker
 
           docker ps -a
