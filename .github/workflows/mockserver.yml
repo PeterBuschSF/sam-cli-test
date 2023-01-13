@@ -56,13 +56,14 @@ jobs:
             -v docker-certs-ca:/certs/ca \
             -v docker-certs-client:/certs/client \
             docker:dind
-          sleep 10
+          sleep 20
           docker run --name docker-base -d -t \
             --network docker --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
             -v docker-certs-client:/certs/client:ro \
             docker docker-entrypoint.sh sh
-
+          sleep 20
+          
           docker ps -a
 
           docker exec docker-base sh -c "docker info"
