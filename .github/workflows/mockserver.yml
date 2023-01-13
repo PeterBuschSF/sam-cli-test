@@ -45,7 +45,8 @@ jobs:
         run: |
           docker pull -q docker
           docker pull -q docker:dind
-
+          
+          docker network create docker
           docker run --privileged --name docker-dind -d \
             --network docker --network-alias docker \
             -e DOCKER_TLS_CERTDIR=/certs \
