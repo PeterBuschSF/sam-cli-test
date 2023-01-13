@@ -65,12 +65,14 @@ jobs:
 
           echo 'docker-base'
           pwd
-          echo ${GITHUB_PATH}
+          echo ${GITHUB_ACTION_PATH}
+          echo ${GITHUB_ENV}
+          echo ${GITHUB_WORKSPACE}
           docker run --name docker-base -d -t \
             --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
             -v some-docker-certs-client:/certs/client:ro \
-            -v ${GITHUB_PATH}/mockserver:/mockserver \
+            -v ${GITHUB_WORKSPACE}/mockserver:/mockserver \
             docker
 
           docker ps -a
