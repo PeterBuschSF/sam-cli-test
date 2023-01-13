@@ -19,6 +19,7 @@ jobs:
         run: |
           docker pull mockserver/mockserver
           docker pull alpine
+          cd mockserver
           docker-compose up -d 
           curl --retry 2 --retry-all-errors --retry-delay 5 -X PUT http://localhost:8080/mockserver/status
           curl -X GET http://localhost:8080/hello
