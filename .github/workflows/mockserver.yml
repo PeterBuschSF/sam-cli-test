@@ -72,7 +72,7 @@ jobs:
 
           docker ps -a
 
-          docker exec docker-base sh -c "docker info"
+          docker exec docker-base "docker info"
 
       - name: docker-base logs
         if: ${{ always() }}
