@@ -78,6 +78,7 @@ jobs:
           docker ps -a
 
           docker exec docker-base docker-entrypoint.sh sh -c "
+            apk add curl
             docker pull -q mockserver/mockserver;\
             docker pull -q alpine;\
             cd /mockserver;\
