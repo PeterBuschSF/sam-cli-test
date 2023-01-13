@@ -7,7 +7,7 @@ services:
     container_name: mockserver
     image: mockserver/mockserver
     ports:
-      - 8080:8080
+      - 1080:1080
     networks:
       test:
         aliases:
