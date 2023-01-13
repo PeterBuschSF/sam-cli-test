@@ -49,21 +49,27 @@ jobs:
           mkdir docker-certs-ca
           mkdir docker-certs-client
 
-          docker network create docker
+          echo 'networks and volumes'
+          docker network create some-network
+          docker volume create some-docker-certs-ca
+          docker volume create some-docker-certs-client 
+
+          echo 'dind'
           docker run --privileged --name docker-dind -d \
-            --network docker --network-alias docker \
+            --network some-network --network-alias docker \
             -e DOCKER_TLS_CERTDIR=/certs \
-            -v docker-certs-ca:/certs/ca \
-            -v docker-certs-client:/certs/client \
+            -v some-docker-certs-ca:/certs/ca \
+            -v some-docker-certs-client:/certs/client \
             docker:dind
-          sleep 20
+          sleep 10
+
+          echo 'docker-base'
           docker run --name docker-base -d -t \
-            --network docker --network-alias docker-base \
+            --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
-            -v docker-certs-client:/certs/client:ro \
-            docker docker-entrypoint.sh sh
-          sleep 20
-          
+            -v some-docker-certs-client:/certs/client:ro \
+            docker version
+
           docker ps -a
 
           docker exec docker-base sh -c "docker info"
