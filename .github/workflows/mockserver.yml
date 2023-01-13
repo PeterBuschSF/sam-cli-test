@@ -26,5 +26,5 @@ jobs:
           # curl --retry 10 --retry-all-errors --retry-delay 5 -X PUT http://localhost:8080/mockserver/status
           # curl -X GET http://localhost:8080/hello
           docker run --name alpine --rm --network test alpine /bin/sh -c "apk add curl" \
-            "uname -a" \
-            "curl -X GET http://mockserver:8080/hello"
+            "&& uname -a" \
+            "&& curl -X GET http://mockserver:8080/hello"
