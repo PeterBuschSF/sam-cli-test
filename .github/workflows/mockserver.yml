@@ -68,11 +68,22 @@ jobs:
             --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
             -v some-docker-certs-client:/certs/client:ro \
+            -v ./mockserver:/mockserver \
             docker
 
           docker ps -a
 
-          docker exec docker-base docker-entrypoint.sh sh -c "docker info"
+          docker exec docker-base docker-entrypoint.sh sh -c "
+            docker pull -q mockserver/mockserver;\
+            docker pull -q alpine;\
+            cd /mockserver;\
+            docker-compose up -d ;\
+            curl --retry 10 --retry-all-errors --retry-delay 5 -X PUT http://docker:1080/mockserver/status;\
+            curl -X GET http://docker:1080/hello;\
+            docker run --name alpine --network test -t -d alpine;\
+            docker exec alpine apk add curl;\
+            docker exec alpine curl -X GET http://mockserver:1080/hello;\
+          "
 
       - name: docker-base logs
         if: ${{ always() }}
