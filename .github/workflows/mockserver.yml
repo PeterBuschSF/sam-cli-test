@@ -44,8 +44,14 @@ jobs:
       - name: test running and connecting to mockserver
         run: |
           docker pull -q docker
-          docker run -t -d docker sh -c "
+          docker run -t -d --name docker-base docker
+          docker exec docker-base sh -c "
             docker info;\
-            docker run --privileged -d docker:dind;\
+            docker run --privileged --name dind -d docker:dind;\
             docker info;\
+            docker logs dind;\
           "
+
+      - name: docker-base logs
+        if: ${{ always() }}
+        run: docker logs docker-base
