@@ -1,0 +1,21 @@
+name: mockserver
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+
+jobs:
+  mockserver-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: check versions
+        run: |
+          docker --version
+          docker-compose --version || docker compose version || true
+
+      - name: Run a multi-line script
+        run: |
+          docker pull mockserver/mockserver
+          docker pull alpine
