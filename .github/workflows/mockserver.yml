@@ -44,14 +44,26 @@ jobs:
       - name: test running and connecting to mockserver
         run: |
           docker pull -q docker
-          docker run -t -d --name docker-base docker
-          docker exec docker-base sh -c "
-            docker info;\
-            docker run --privileged --name dind -d docker:dind;\
-            docker info;\
-            docker logs dind;\
-          "
+          docker pull -q docker:dind
+
+          docker run --privileged --name docker-dind -d \
+            --network docker --network-alias docker \
+            -e DOCKER_TLS_CERTDIR=/certs \
+            -v docker-certs-ca:/certs/ca \
+            -v docker-certs-client:/certs/client \
+            docker:dind
+          docker run --name docker-base -d -t \
+            --network docker --network-alias docker-base \
+            -e DOCKER_TLS_CERTDIR=/certs \
+            -v docker-certs-client:/certs/client:ro \
+            docker
+
+          docker exec docker-base sh -c "docker info"
 
       - name: docker-base logs
         if: ${{ always() }}
         run: docker logs docker-base
+        
+      - name: docker-dind logs
+        if: ${{ always() }}
+        run: docker logs docker-dind
