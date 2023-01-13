@@ -18,11 +18,11 @@ jobs:
 
       - name: test running and connecting to mockserver
         run: |
-          docker pull mockserver/mockserver
-          docker pull alpine
+          docker pull -q mockserver/mockserver
+          docker pull -q alpine
           cd mockserver
           docker-compose up -d 
           # curl --retry 10 --retry-all-errors --retry-delay 5 -X PUT http://localhost:8080/mockserver/status
           # curl -X GET http://localhost:8080/hello
-          docker run --name alpine --rm --network test alpine /bin/sh apk add curl \
+          docker run --name alpine --rm --network test alpine /bin/sh -c apk add curl \
             && curl -X GET http://mockserver:8080/hello          
