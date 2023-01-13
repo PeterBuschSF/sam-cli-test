@@ -64,10 +64,6 @@ jobs:
           sleep 10
 
           echo 'docker-base'
-          pwd
-          echo ${GITHUB_ACTION_PATH}
-          echo ${GITHUB_ENV}
-          echo ${GITHUB_WORKSPACE}
           docker run --name docker-base -d -t \
             --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
@@ -78,6 +74,7 @@ jobs:
           docker ps -a
 
           docker exec docker-base docker-entrypoint.sh sh -c "
+            echo 'Inside docker-base'
             apk add curl
             docker pull -q mockserver/mockserver;\
             docker pull -q alpine;\
