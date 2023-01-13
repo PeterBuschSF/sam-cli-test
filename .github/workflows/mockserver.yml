@@ -56,7 +56,7 @@ jobs:
             -v docker-certs-ca:/certs/ca \
             -v docker-certs-client:/certs/client \
             docker:dind
-          docker run --name docker-base -d \
+          docker run --name docker-base -d -t \
             --network docker --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
             -v docker-certs-client:/certs/client:ro \
