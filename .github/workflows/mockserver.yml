@@ -62,6 +62,8 @@ jobs:
             -v docker-certs-client:/certs/client:ro \
             docker docker-entrypoint.sh sh
 
+          docker ps -a
+          
           docker exec docker-base sh -c "docker info"
 
       - name: docker-base logs
