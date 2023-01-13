@@ -1,0 +1,19 @@
+networks:
+  inttest:
+    name: test
+
+services:
+  mockserver:
+    container_name: mockserver
+    image: mockserver/mockserver
+    ports:
+      - 8080:8080
+    networks:
+      test:
+        aliases:
+          - mockserver
+    environment:
+      - MOCKSERVER_INITIALIZATION_JSON_PATH=/config/expectations.json
+    volumes:
+      - ./expectations.json:/config/expectations.json
+
