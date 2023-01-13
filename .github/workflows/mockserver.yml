@@ -88,6 +88,7 @@ jobs:
             docker run --name alpine --network test -t -d alpine;\
             docker exec alpine apk add curl;\
             docker exec alpine curl -X GET http://mockserver:1080/hello;\
+            docker logs alpine
           "
 
       - name: docker-base logs
