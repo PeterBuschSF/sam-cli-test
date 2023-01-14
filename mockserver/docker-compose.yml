@@ -15,5 +15,5 @@ services:
     environment:
       - MOCKSERVER_INITIALIZATION_JSON_PATH=/config/expectations.json
     volumes:
-      - /mockserver/config/expectations.json:/config/expectations.json
+      - /config/:/config/
 
