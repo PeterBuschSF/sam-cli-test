@@ -2,6 +2,7 @@ name: mockserver
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   mockserver-test:
@@ -54,7 +55,6 @@ jobs:
           docker volume create some-docker-certs-ca
           docker volume create some-docker-certs-client 
 
-          echo 'dind'
           docker run --privileged --name docker-dind -d \
             --network some-network --network-alias docker \
             -e DOCKER_TLS_CERTDIR=/certs \
@@ -62,6 +62,7 @@ jobs:
             -v some-docker-certs-client:/certs/client \
             docker:dind
           sleep 10
+          docker logs --tail=3 docker-dind
 
       - name: create docker-base
         run: |
@@ -77,20 +78,24 @@ jobs:
 
           docker exec docker-base apk add curl
 
-      - name: test running and connecting to mockserver
+      - name: start mockserver in dind
         run: |
-          docker exec docker-base docker-entrypoint.sh sh -c "\
-            echo 'Inside docker-base';\
-            docker pull -q mockserver/mockserver;\
-            docker pull -q alpine;\
-            cd /mockserver;\
+          docker exec docker-base sh -c "\
+            docker pull -q mockserver/mockserver ;\
+            cd /mockserver ;\
             docker-compose up -d ;\
-            curl --retry 10 --retry-all-errors --retry-delay 5 -X PUT http://docker:1080/mockserver/status;\
-            curl -X GET http://docker:1080/hello;\
-            docker run --name alpine --network test -t -d alpine;\
-            docker exec alpine apk add curl;\
-            docker exec alpine curl -X GET http://mockserver:1080/hello;\
-            docker logs alpine
+            curl --retry 10 --retry-all-errors --retry-delay 5 -X PUT http://docker:1080/mockserver/status ;\
+            echo 'Call Mockserver' ;\
+            curl -X GET http://docker:1080/hello ;\
+          "
+
+      - name: Call Mockserver from another container 
+        run: |
+          docker exec docker-base sh -c "\
+            docker pull -q alpine ;\
+            docker run --name alpine --network test -t -d alpine ;\
+            docker exec alpine apk add curl ;\
+            docker exec alpine curl -X GET http://mockserver:1080/hello ;\
           "
 
       - name: docker-dind logs
@@ -100,4 +105,11 @@ jobs:
       - name: docker-base logs
         if: ${{ always() }}
         run: docker logs docker-base
-        
+      
+      - name: mockserver logs
+        if: ${{ always() }}
+        run: docker exec docker-base docker logs mockserver
+      
+      - name: alpine logs
+        if: ${{ always() }}
+        run: docker exec docker-base docker logs alpine
