@@ -69,6 +69,7 @@ jobs:
       - name: create docker-base
         run: |
           echo "${GITHUB_WORKSPACE}/mockserver"
+          ls ${GITHUB_WORKSPACE}/mockserver
           echo 'docker-base'
           docker run --name docker-base -d -t \
             --network some-network --network-alias docker-base \
