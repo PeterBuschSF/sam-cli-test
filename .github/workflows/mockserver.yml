@@ -41,7 +41,7 @@ jobs:
           docker --version
           docker-compose --version
 
-      - name: test running and connecting to mockserver
+      - name: dind setup
         run: |
           docker pull -q docker
           docker pull -q docker:dind
@@ -63,6 +63,8 @@ jobs:
             docker:dind
           sleep 10
 
+      - name: create docker-base
+        run: |
           echo 'docker-base'
           docker run --name docker-base -d -t \
             --network some-network --network-alias docker-base \
@@ -73,9 +75,12 @@ jobs:
 
           docker ps -a
 
-          docker exec docker-base docker-entrypoint.sh sh -c "
-            echo 'Inside docker-base'
-            apk add curl
+          docker exec docker-base apk add curl
+
+      - name: test running and connecting to mockserver
+        run: |
+          docker exec docker-base docker-entrypoint.sh sh -c "\
+            echo 'Inside docker-base';\
             docker pull -q mockserver/mockserver;\
             docker pull -q alpine;\
             cd /mockserver;\
@@ -88,10 +93,11 @@ jobs:
             docker logs alpine
           "
 
+      - name: docker-dind logs
+        if: ${{ always() }}
+        run: docker logs docker-dind
+
       - name: docker-base logs
         if: ${{ always() }}
         run: docker logs docker-base
         
-      - name: docker-dind logs
-        if: ${{ always() }}
-        run: docker logs docker-dind
