@@ -84,6 +84,7 @@ jobs:
         run: |
           docker exec docker-base docker-entrypoint.sh sh -c "\
             docker pull -q mockserver/mockserver ;\
+            cd ${GITHUB_WORKSPACE}/mockserver ;\
             docker-compose up -d ;\
             curl -o - -s -w "%{http_code}\n" --retry 10 --retry-all-errors --retry-delay 5 -X PUT http://docker:1080/mockserver/status ;\
             echo '\nCall Mockserver' ;\
