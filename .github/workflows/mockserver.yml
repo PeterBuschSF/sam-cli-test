@@ -61,7 +61,9 @@ jobs:
             -v some-docker-certs-ca:/certs/ca \
             -v some-docker-certs-client:/certs/client \
             docker:dind
+          
           sleep 10
+          
           docker logs --tail=3 docker-dind
 
       - name: create docker-base
@@ -80,7 +82,7 @@ jobs:
 
       - name: start mockserver in dind
         run: |
-          docker exec docker-base sh -c "\
+          docker exec docker-base docker-entrypoint.sh sh -c "\
             docker pull -q mockserver/mockserver ;\
             cd /mockserver ;\
             docker-compose up -d ;\
@@ -91,7 +93,7 @@ jobs:
 
       - name: Call Mockserver from another container 
         run: |
-          docker exec docker-base sh -c "\
+          docker exec docker-base docker-entrypoint.sh sh -c "\
             docker pull -q alpine ;\
             docker run --name alpine --network test -t -d alpine ;\
             docker exec alpine apk add curl ;\
@@ -108,8 +110,8 @@ jobs:
       
       - name: mockserver logs
         if: ${{ always() }}
-        run: docker exec docker-base docker logs mockserver
+        run: docker exec docker-base docker-entrypoint.sh sh -c "docker logs mockserver"
       
       - name: alpine logs
         if: ${{ always() }}
-        run: docker exec docker-base docker logs alpine
+        run: docker exec docker-base docker-entrypoint.sh sh -c "docker logs alpine"
