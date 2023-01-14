@@ -87,9 +87,11 @@ jobs:
             docker-compose up -d ;\
             curl -o - -s -w "%{http_code}\n" --retry 10 --retry-all-errors --retry-delay 5 -X PUT http://docker:1080/mockserver/status ;\
             echo '\nCall Mockserver' ;\
-            curl -d '{"httpRequest":{"path":"/hello"},"httpResponse":{"body":"hello user"}}' -X PUT http://docker:1080/mockserver/expectation ;\
-            curl -o - -s -w "%{http_code}\n" -X GET http://docker:1080/hello ;\
           "
+
+          docker exec docker-base curl -d '{"httpRequest":{"path":"/hello"},"httpResponse":{"body":"hello user"}}' -X PUT http://docker:1080/mockserver/expectation
+          docker exec docker-base curl -o - -s -w "%{http_code}\n" -X GET http://docker:1080/hello
+
 
       - name: Call Mockserver from another container 
         run: |
