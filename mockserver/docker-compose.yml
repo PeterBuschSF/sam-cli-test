@@ -12,8 +12,3 @@ services:
       test:
         aliases:
           - mockserver
-    environment:
-      - MOCKSERVER_INITIALIZATION_JSON_PATH=/config/expectations.json
-    volumes:
-      - /config/:/config/
-
