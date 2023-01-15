@@ -48,7 +48,10 @@ jobs:
             -e DOCKER_TLS_CERTDIR=/certs \
             -v some-docker-certs-client:/certs/client:ro \
             ubuntu
-          docker exec docker-base apt-get -y install --no-install-recommends curl docker
+          docker exec docker-base sh -c "
+            apt-get update --quiet=2
+            apt-get -y install --no-install-recommends curl docker ;\
+          "
       
       - run: docker ps -a
       - run: docker exec docker-base /usr/bin/env
