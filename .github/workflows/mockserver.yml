@@ -75,6 +75,7 @@ jobs:
             --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
             -v some-docker-certs-client:/certs/client:ro \
+            -v mockserver:mockserver
             docker
           docker exec docker-base apk add curl
       
