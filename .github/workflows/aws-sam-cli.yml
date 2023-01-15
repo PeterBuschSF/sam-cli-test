@@ -24,7 +24,7 @@ jobs:
 
       - name: Docker IN Docker Setup
         run: |
-          docker pull -q docker
+          docker pull -q ubuntu
           docker pull -q docker:dind
           docker network create some-network
           docker volume create some-docker-certs-ca
@@ -47,15 +47,17 @@ jobs:
             --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
             -v some-docker-certs-client:/certs/client:ro \
-            docker
-          docker exec docker-base apk add curl
+            ubuntu
+          docker exec docker-base apt-get -y install --no-install-recommends curl docker
       
       - run: docker ps -a
       - run: docker exec docker-base /usr/bin/env
+      - run: docker exec docker-base version
+      - run: docker exec docker-base info
       
       - name: Install AWS CLI
         run: |
-          docker exec docker-base docker-entrypoint.sh sh -c "\
+          docker exec docker-base sh -c "\
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" ;\
             unzip awscliv2.zip -q ;\
             ./aws/install ;\
@@ -64,7 +66,7 @@ jobs:
 
       - name: Install SAM CLI
         run: |
-          docker exec docker-base docker-entrypoint.sh sh -c "\
+          docker exec docker-base sh -c "\
             curl "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" -o "samcli.zip" ;\
             unzip samcli.zip -q -d sam-installation ;\
             ./sam-installation/install ;\
