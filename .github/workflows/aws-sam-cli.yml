@@ -1,0 +1,17 @@
+name: aws-sam-cli
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  aws-sam-test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sam init --no-interactive --name sam-app --runtime python3.9 --dependency-manager pip --app-template hello-world
+      - run: cd sam-app
+      - run: sam build --use-container --debug
+      - run: sam local start-api
+      - run: sam local invoke "HelloWorldFunction" -e events/event.json
+      - run: sam local generate-event apigateway aws-proxy --body "" --path "hello" --method GET > api-event.json
+      - run: diff api-event.json events/event.json
