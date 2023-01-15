@@ -2,85 +2,82 @@ name: mockserver
 
 on:
   workflow_dispatch:
-  push:
 
 jobs:
   mockserver-test:
-    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: check versions
+      - name: Current Versions
         run: |
           docker --version
           docker-compose --version
-
-      - name: test running and connecting to mockserver
-        run: |
           docker pull -q mockserver/mockserver
           docker pull -q alpine
+
+      - name: mockserver setup
+        run: |
           cd mockserver
           docker-compose up -d 
           curl --retry 10 --retry-all-errors --retry-delay 5 -X PUT http://localhost:1080/mockserver/status
-          curl -X GET http://localhost:1080/hello
+          curl -d '{"httpRequest":{"path":"/hello"},"httpResponse":{"body":"hello user"}}' \
+            -X PUT http://localhost:1080/mockserver/expectation
+
+      - run: curl -X GET http://localhost:1080/hello
+
+      - name: Call Mockserver from another container
           docker run --name alpine --network test -t -d alpine
           docker exec alpine apk add curl
-          docker exec alpine curl -X GET http://mockserver:1080/hello
+          docker exec alpine curl -o - -s -w "%{http_code}\n" -X GET http://mockserver:1080/hello
       
       - name: mockserver logs
         if: ${{ always() }}
         run: docker logs mockserver
+
+      - name: alpine logs
+        if: ${{ always() }}
+        run: docker logs alpine
 
   mockserver-dind:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: check versions
+      - name: Current Versions
         run: |
           docker --version
           docker-compose --version
 
-      - name: dind setup
+      - name: Docker IN Docker Setup
         run: |
           docker pull -q docker
           docker pull -q docker:dind
-          
-          mkdir docker-certs-ca
-          mkdir docker-certs-client
-
-          echo 'networks and volumes'
           docker network create some-network
           docker volume create some-docker-certs-ca
           docker volume create some-docker-certs-client 
-
+      
+      - name: Run dind
+        run: |
           docker run --privileged --name docker-dind -d \
             --network some-network --network-alias docker \
             -e DOCKER_TLS_CERTDIR=/certs \
             -v some-docker-certs-ca:/certs/ca \
             -v some-docker-certs-client:/certs/client \
             docker:dind
-          
           sleep 10
-          
           docker logs --tail=3 docker-dind
 
-      - name: create docker-base
+      - name: Run docker-base
         run: |
-          echo "${GITHUB_WORKSPACE}/mockserver"
-          ls ${GITHUB_WORKSPACE}/mockserver
-          echo 'docker-base'
           docker run --name docker-base -d -t \
             --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
             -v some-docker-certs-client:/certs/client:ro \
-            -v ${GITHUB_WORKSPACE}/mockserver:/mockserver \
             docker
-
-          docker ps -a
-
           docker exec docker-base apk add curl
+      
+      - run: docker ps -a
 
       - name: start mockserver in dind
         run: |
@@ -91,10 +88,14 @@ jobs:
             curl -o - -s -w "%{http_code}\n" --retry 10 --retry-all-errors --retry-delay 5 -X PUT http://docker:1080/mockserver/status ;\
             echo '\nCall Mockserver' ;\
           "
-
-          docker exec docker-base curl -d '{"httpRequest":{"path":"/hello"},"httpResponse":{"body":"hello user"}}' -X PUT http://docker:1080/mockserver/expectation
+      - name: set mockserver expectation
+        run: |
+        docker exec docker-base curl -d '{"httpRequest":{"path":"/hello"},"httpResponse":{"body":"hello user"}}' \
+          -X PUT http://docker:1080/mockserver/expectation
+      
+      - name: Test Mockserver call from docker-base
+        run: |
           docker exec docker-base curl -o - -s -w "%{http_code}\n" -X GET http://docker:1080/hello
-
 
       - name: Call Mockserver from another container 
         run: |
