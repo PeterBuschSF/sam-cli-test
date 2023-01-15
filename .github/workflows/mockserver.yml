@@ -81,6 +81,14 @@ jobs:
       
       - run: docker ps -a
 
+      - name: docker-base environment variables
+        run: |
+          docker exec docker-base docker-entrypoint.sh sh -c "\
+            echo 'DOCKER_TLS_VERIFY='$DOCKER_TLS_VERIFY ;\
+            echo 'DOCKER_CERT_PATH='$DOCKER_CERT_PATH ;\
+            echo 'DOCKER_HOST='$DOCKER_HOST ;\
+          "
+
       - name: start mockserver in dind
         run: |
           docker exec docker-base docker-entrypoint.sh sh -c "\

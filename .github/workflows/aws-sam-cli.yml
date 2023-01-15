@@ -12,3 +12,68 @@ jobs:
       - run: cd sam-app && sam build --use-container --debug
       - run: cd sam-app && sam local invoke "HelloWorldFunction" -e events/event.json
       - run: cd sam-app && sam local generate-event apigateway aws-proxy --body "" --path "hello" --method GET
+
+  aws-sam-dind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Current Versions
+        run: |
+          docker --version
+          docker-compose --version
+
+      - name: Docker IN Docker Setup
+        run: |
+          docker pull -q docker
+          docker pull -q docker:dind
+          docker network create some-network
+          docker volume create some-docker-certs-ca
+          docker volume create some-docker-certs-client 
+      
+      - name: Run dind
+        run: |
+          docker run --privileged --name docker-dind -d \
+            --network some-network --network-alias docker \
+            -e DOCKER_TLS_CERTDIR=/certs \
+            -v some-docker-certs-ca:/certs/ca \
+            -v some-docker-certs-client:/certs/client \
+            docker:dind
+          sleep 10
+          docker logs --tail=3 docker-dind
+
+      - name: Run docker-base
+        run: |
+          docker run --name docker-base -d -t \
+            --network some-network --network-alias docker-base \
+            -e DOCKER_TLS_CERTDIR=/certs \
+            -v some-docker-certs-client:/certs/client:ro \
+            -v ${GITHUB_WORKSPACE}/mockserver:/mockserver \
+            docker
+          docker exec docker-base apk add curl
+      
+      - run: docker ps -a
+
+      - name: docker-base environment variables
+        run: |
+          docker exec docker-base docker-entrypoint.sh sh -c "\
+            echo 'DOCKER_TLS_VERIFY='$DOCKER_TLS_VERIFY ;\
+            echo 'DOCKER_CERT_PATH='$DOCKER_CERT_PATH ;\
+            echo 'DOCKER_HOST='$DOCKER_HOST ;\
+          "
+      
+      - name: Install AWS CLI
+        run: |
+          docker exec docker-base docker-entrypoint.sh sh -c "\
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" ;\
+            unzip awscliv2.zip ;\
+            ./aws/install ;\
+            aws --version ;\
+          "
+
+      - name: Install SAM CLI
+        run: |
+          docker exec docker-base docker-entrypoint.sh sh -c "\
+            curl "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" -o "samcli.zip" ;\
+            unzip samcli.zip -d sam-installation ;\
+            ./sam-installation/install ;\
+            sam --version ;\
+          "
