@@ -48,14 +48,21 @@ jobs:
             -e DOCKER_TLS_CERTDIR=/certs \
             -v some-docker-certs-client:/certs/client:ro \
             ubuntu
+          
+      - name: Install Docker
+        run: |
           docker exec docker-base sh -c "
-            apt-get update --quiet=2
-            apt-get -y install --no-install-recommends curl docker ;\
+            apt-get update --quiet ;\
+            apt-get -y install --no-install-recommends curl ;\
+            curl -X GET -fSL "https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz" -o "/tmp/docker.tgz" ;\ 
+            tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
+            rm -f /tmp/docker.tgz ;\
           "
       
       - run: docker ps -a
       - run: docker exec docker-base /usr/bin/env
       - run: docker exec docker-base docker version
+
       
       - name: Install AWS CLI
         run: |
