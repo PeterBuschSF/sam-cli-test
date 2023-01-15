@@ -10,7 +10,6 @@ jobs:
     steps:
       - run: sam init --no-interactive --name sam-app --runtime python3.9 --dependency-manager pip --app-template hello-world
       - run: cd sam-app && sam build --use-container --debug
-      - run: cd sam-app && sam local start-api
       - run: cd sam-app && sam local invoke "HelloWorldFunction" -e events/event.json
       - run: cd sam-app && sam local generate-event apigateway aws-proxy --body "" --path "hello" --method GET > api-event.json
       - run: diff sam-app/api-event.json sam-app/events/event.json
