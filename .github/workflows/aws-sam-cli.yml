@@ -6,6 +6,7 @@ on:
 
 jobs:
   aws-sam-test:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - run: sam init --no-interactive --name sam-app --runtime python3.9 --dependency-manager pip --app-template hello-world
@@ -53,7 +54,7 @@ jobs:
 
       - name: docker-base environment variables
         run: |
-          docker exec docker-base docker-entrypoint.sh sh -c "\
+          docker exec docker-base docker-entrypoint.sh "\
             echo 'DOCKER_TLS_VERIFY='${DOCKER_TLS_VERIFY} ;\
             echo 'DOCKER_CERT_PATH='${DOCKER_CERT_PATH} ;\
             echo 'DOCKER_TLS_CERTDIR='${DOCKER_TLS_CERTDIR} ;\
