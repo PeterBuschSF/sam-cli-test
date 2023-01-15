@@ -51,18 +51,7 @@ jobs:
           docker exec docker-base apk add curl
       
       - run: docker ps -a
-
-      - name: docker-base environment variables
-        run: |
-          docker exec docker-base echo 'DOCKER_TLS_CERTDIR='${DOCKER_TLS_CERTDIR}
-          docker exec docker-base sh -c "echo 'DOCKER_TLS_CERTDIR='${DOCKER_TLS_CERTDIR}"
-          docker exec docker-base docker-entrypoint.sh sh -c "echo 'DOCKER_TLS_CERTDIR='${DOCKER_TLS_CERTDIR}"
-          docker exec docker-base "\
-            echo 'DOCKER_TLS_VERIFY='${DOCKER_TLS_VERIFY} ;\
-            echo 'DOCKER_CERT_PATH='${DOCKER_CERT_PATH} ;\
-            echo 'DOCKER_TLS_CERTDIR='${DOCKER_TLS_CERTDIR} ;\
-            echo 'DOCKER_HOST='${DOCKER_HOST} ;\
-          "
+      - run: docker exec docker-base /usr/bin/env
       
       - name: Install AWS CLI
         run: |
