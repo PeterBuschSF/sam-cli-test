@@ -27,7 +27,7 @@ jobs:
       - run: curl -X GET http://localhost:1080/hello
 
       - name: Call Mockserver from another container
-      - run: |
+        run: |
           docker run --name alpine --network test -t -d alpine
           docker exec alpine apk add curl
           docker exec alpine curl -o - -s -w "%{http_code}\n" -X GET http://mockserver:1080/hello
