@@ -62,7 +62,7 @@ jobs:
             echo 'ls /usr/local/bin' ; ls /usr/local/bin ;\
           "
 
-      - run: docker exec docker-base export DOCKER_HOST="tcp://docker:2376"
+      - run: docker exec docker-base sh -c "export DOCKER_HOST=tcp://docker:2376"
 
       - run: docker ps -a
       - run: docker exec docker-base /usr/bin/env
