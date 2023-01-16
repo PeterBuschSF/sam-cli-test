@@ -82,7 +82,7 @@ jobs:
       
       - run: docker ps -a
       - run: docker exec docker-base /usr/bin/env
-      - run: docker exec docker-base version
+      - run: docker exec docker-base docker-entrypoint.sh sh -c "docker version"
 
       - name: start mockserver in dind server
         run: |
