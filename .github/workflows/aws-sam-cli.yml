@@ -56,10 +56,10 @@ jobs:
             apt-get update --quiet ;\
             apt-get -y install --no-install-recommends ca-certificates curl ;\
             update-ca-certificates ;\
-            curl -X GET -fSL "https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz" -o "/tmp/docker.tgz" ;\ 
+            curl -X GET -fSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz -o /tmp/docker.tgz ;\ 
+            echo 'ls /tmp' ; ls /tmp ;\
             tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
-            echo "ls /usr/local/bin" ;\
-            ls /usr/local/bin ;\
+            echo 'ls /usr/local/bin' ; ls /usr/local/bin ;\
           "
 
       - run: docker exec docker-base export DOCKER_HOST="tcp://docker:2376"
