@@ -2,7 +2,6 @@ name: aws-sam-cli
 
 on:
   workflow_dispatch:
-  push:
 
 jobs:
   aws-sam-test:
