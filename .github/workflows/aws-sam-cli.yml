@@ -59,6 +59,7 @@ jobs:
             curl -X GET -fSL "https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz" -o "/tmp/docker.tgz" ;\ 
             tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
             rm -f /tmp/docker.tgz ;\
+            export DOCKER_HOST="tcp://docker:2376"
           "
 
       - run: docker ps -a
