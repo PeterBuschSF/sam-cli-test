@@ -59,15 +59,13 @@ jobs:
             curl -X GET -fSL "https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz" -o "/tmp/docker.tgz" ;\ 
             tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
             rm -f /tmp/docker.tgz ;\
-            ls /usr/local/bin ;\
-            ls /usr/local/bin/docker ;\
           "
-      
+
       - run: docker ps -a
       - run: docker exec docker-base /usr/bin/env
       - run: docker exec docker-base docker version
+      - run: docker exec docker-base docker context list
 
-      
       - name: Install AWS CLI
         run: |
           docker exec docker-base sh -c "\
