@@ -53,12 +53,20 @@ jobs:
             -v some-docker-certs-client:/certs/client:ro \
             ubuntu
           
-      - name: Install Docker
+      - name: Install Packages
         run: |
           docker exec docker-base sh -c "
             apt-get update --quiet ;\
-            apt-get -y install --no-install-recommends ca-certificates curl ;\
+            apt-get -y install --no-install-recommends \
+              ca-certificates \
+              curl \
+              unzip ;\
             update-ca-certificates ;\
+          "
+
+      - name: Install Docker
+        run: |
+          docker exec docker-base sh -c "
             curl -X GET -fSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz -o /tmp/docker.tgz ;\ 
             tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
           "
