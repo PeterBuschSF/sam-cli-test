@@ -5,7 +5,7 @@ on:
 
 jobs:
   mockserver-test:
-    name: Test Docker on Gitlab's ubuntu-latest using Mockserver
+    name: Test Docker on Github's ubuntu-latest using Mockserver
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

@@ -2,9 +2,11 @@ name: aws-sam-cli
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   aws-sam-test:
+    name: Test AWS SAM CLI from Github's ubuntu-latest
     if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
@@ -14,6 +16,7 @@ jobs:
       - run: cd sam-app && sam local generate-event apigateway aws-proxy --body "" --path "hello" --method GET
 
   aws-sam-dind:
+    name: Test AWS SAM CLI from ubuntu using Docker in Docker
     runs-on: ubuntu-latest
     steps:
       - name: Current Versions
