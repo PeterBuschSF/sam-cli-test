@@ -47,6 +47,7 @@ jobs:
           docker run --name docker-base -d -t \
             --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
+            -e DOCKER_HOST=tcp://docker:2376 \
             -v some-docker-certs-client:/certs/client:ro \
             ubuntu
           
@@ -61,8 +62,6 @@ jobs:
             tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
             echo 'ls /usr/local/bin' ; ls /usr/local/bin ;\
           "
-
-      - run: docker exec docker-base sh -c "export DOCKER_HOST=tcp://docker:2376"
 
       - run: docker ps -a
       - run: docker exec docker-base /usr/bin/env
