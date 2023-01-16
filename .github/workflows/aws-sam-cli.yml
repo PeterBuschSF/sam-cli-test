@@ -47,7 +47,9 @@ jobs:
           docker run --name docker-base -d -t \
             --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
+            -e DOCKER_CERT_PATH=/certs/client \
             -e DOCKER_HOST=tcp://docker:2376 \
+            -e DOCKER_TLS_VERIFY=1 \
             -v some-docker-certs-client:/certs/client:ro \
             ubuntu
           
@@ -58,9 +60,7 @@ jobs:
             apt-get -y install --no-install-recommends ca-certificates curl ;\
             update-ca-certificates ;\
             curl -X GET -fSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz -o /tmp/docker.tgz ;\ 
-            echo 'ls /tmp' ; ls /tmp ;\
             tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
-            echo 'ls /usr/local/bin' ; ls /usr/local/bin ;\
           "
 
       - run: docker ps -a
