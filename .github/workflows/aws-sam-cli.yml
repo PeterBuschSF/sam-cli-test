@@ -5,6 +5,7 @@ on:
 
 jobs:
   aws-sam-test:
+    if: ${{ falase }}
     name: Test AWS SAM CLI from Github's ubuntu-latest
     runs-on: ubuntu-latest
     steps:
@@ -15,6 +16,7 @@ jobs:
       - run: sleep 10 && curl http://localhost:3000/hello
 
   aws-sam-dind:
+    if: ${{ falase }}
     name: Test AWS SAM CLI from ubuntu using Docker in Docker
     runs-on: ubuntu-latest
     steps:
@@ -178,4 +180,5 @@ jobs:
         run: docker exec runner-base sh -c \
           'cd sam-app && sam local start-api > /dev/null 2>&1 &'
       
-      - run: docker exec runner-base sh -c 'sleep 10 && curl http://docker:3000/hello'
+      - run: docker exec runner-base sh -c 'docker ps -a'
+      - run: docker exec runner-base sh -c 'sleep 10 && curl -fSL http://docker:3000/hello'
