@@ -59,7 +59,7 @@ jobs:
           docker volume create some-docker-certs-ca
           docker volume create some-docker-certs-client 
       
-      - name: Run dind
+      - name: Run Docker-In-Docker Container
         run: |
           docker run --privileged --name docker-dind -d \
             --network some-network --network-alias docker \
@@ -70,24 +70,27 @@ jobs:
           sleep 10
           docker logs --tail=3 docker-dind
 
-      - name: Run docker-base
+      - name: Run docker-base Container
         run: |
           docker run --name docker-base -d -t \
             --network some-network --network-alias docker-base \
             -e DOCKER_TLS_CERTDIR=/certs \
+            -e DOCKER_CERT_PATH=/certs/client \
+            -e DOCKER_HOST=tcp://docker:2376 \
+            -e DOCKER_TLS_VERIFY=1 \
             -v some-docker-certs-client:/certs/client:ro \
             -v ${GITHUB_WORKSPACE}/mockserver:/mockserver \
             docker
           docker exec docker-base apk add curl
       
       - run: docker ps -a
-      - run: docker exec docker-base docker-entrypoint.sh sh -c "/usr/bin/env"
-      - run: docker exec docker-base docker-entrypoint.sh sh -c "docker version"
-      - run: docker exec docker-base docker-entrypoint.sh sh -c "docker context list"
+      - run: docker exec docker-base sh -c "/usr/bin/env"
+      - run: docker exec docker-base sh -c "docker version"
+      - run: docker exec docker-base sh -c "docker context list"
 
       - name: start mockserver in dind server
         run: |
-          docker exec docker-base docker-entrypoint.sh sh -c "\
+          docker exec docker-base sh -c "\
             docker pull -q mockserver/mockserver ;\
             docker network create test
             docker run -dt -p 1080:1080 --network test --network-alias mockserver --name mockserver mockserver/mockserver
@@ -104,7 +107,7 @@ jobs:
 
       - name: Call Mockserver from another container 
         run: |
-          docker exec docker-base docker-entrypoint.sh sh -c "\
+          docker exec docker-base sh -c "\
             docker pull -q alpine ;\
             docker run --name alpine --network test -t -d alpine ;\
             docker exec alpine apk add curl ;\
@@ -121,8 +124,8 @@ jobs:
       
       - name: mockserver logs
         if: ${{ always() }}
-        run: docker exec docker-base docker-entrypoint.sh sh -c "docker logs mockserver"
+        run: docker exec docker-base sh -c "docker logs mockserver"
       
       - name: alpine logs
         if: ${{ always() }}
-        run: docker exec docker-base docker-entrypoint.sh sh -c "docker logs alpine"
+        run: docker exec docker-base sh -c "docker logs alpine"
