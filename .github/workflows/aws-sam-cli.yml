@@ -5,7 +5,6 @@ on:
 
 jobs:
   aws-sam-test:
-    if: ${{ false }}
     name: Test AWS SAM CLI from Github's ubuntu-latest
     runs-on: ubuntu-latest
     steps:
@@ -14,6 +13,7 @@ jobs:
       - run: cd sam-app && sam local invoke "HelloWorldFunction" -e events/event.json
       - run: cd sam-app && sam local start-api > /dev/null 2>&1 &
       - run: sleep 10 && curl http://localhost:3000/hello
+      - run: docker ps -a
 
   aws-sam-dind:
     if: ${{ false }}
@@ -177,7 +177,8 @@ jobs:
           "cd sam-app && sam local invoke HelloWorldFunction -e events/event.json"
 
       - name: sam local start-api
-        run: docker exec runner-base sh -c "\
+        run: |
+          docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local start-api > /dev/null 2>&1 & ;\
             docker ps -a ;\
