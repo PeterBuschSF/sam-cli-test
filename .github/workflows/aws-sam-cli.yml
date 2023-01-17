@@ -2,12 +2,10 @@ name: aws-sam-cli
 
 on:
   workflow_dispatch:
-  push:
 
 jobs:
   aws-sam-test:
     name: Test AWS SAM CLI from Github's ubuntu-latest
-    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - run: sam init --no-interactive --name sam-app --runtime python3.9 --dependency-manager pip --app-template hello-world
@@ -17,7 +15,6 @@ jobs:
 
   aws-sam-dind:
     name: Test AWS SAM CLI from ubuntu using Docker in Docker
-    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - name: Current Versions
@@ -122,7 +119,7 @@ jobs:
 
       - name: Docker-In-Docker Setup
         run: |
-          docker pull -q ubuntu
+          docker pull -q public.ecr.aws/sam/build-python3.9:latest
           docker pull -q docker:dind
           docker network create some-network
           docker volume create some-docker-certs-ca
@@ -148,20 +145,8 @@ jobs:
             -e DOCKER_HOST=tcp://docker:2376 \
             -e DOCKER_TLS_VERIFY=1 \
             -v some-docker-certs-client:/certs/client:ro \
-            public.ecr.aws/sam/build-python3.9:1.70.0-20230113014543
+            public.ecr.aws/sam/build-python3.9:latest
           
-      # - name: Install Packages
-      #   run: |
-      #     docker exec runner-base sh -c "
-      #       apt-get update --quiet ;\
-      #       apt-get -y install --no-install-recommends \
-      #         ca-certificates \
-      #         curl \
-      #         unzip \
-      #         git ;\
-      #       update-ca-certificates ;\
-      #     "
-
       - name: Install Docker
         run: |
           docker exec runner-base sh -c "
