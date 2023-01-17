@@ -93,3 +93,20 @@ jobs:
             sam-installation/install ;\
             sam --version ;\
           "
+
+      - name: sam init
+        run: docker exec docker-base sh -c \
+          "sam init --no-interactive --name sam-app --runtime python3.9 --dependency-manager pip --app-template hello-world"
+
+      - name: sam build --use-container
+        run: docker exec docker-base sh -c \
+          "cd sam-app && sam build --use-container --debug"
+
+      - name: sam local invoke
+        run: docker exec docker-base sh -c \
+          "cd sam-app && sam local invoke HelloWorldFunction -e events/event.json"
+
+      - name: sam local generate-event
+        run: docker exec docker-base sh -c \
+          'cd sam-app && sam local generate-event apigateway aws-proxy --body "" --path "hello" --method GET'
+          
