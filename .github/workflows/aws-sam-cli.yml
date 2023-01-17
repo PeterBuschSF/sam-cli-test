@@ -88,7 +88,7 @@ jobs:
       - name: Install SAM CLI
         run: |
           docker exec docker-base sh -c "\
-            curl https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip -o samcli.zip ;\
+            curl -fSL https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip -o samcli.zip ;\
             unzip -q samcli.zip -d sam-installation ;\
             sam-installation/install ;\
             sam --version ;\
