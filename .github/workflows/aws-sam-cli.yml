@@ -150,16 +150,9 @@ jobs:
       - name: Install Docker
         run: |
           docker exec runner-base sh -c "
-            yum update -y
-            amazon-linux-extras install docker
-            service docker start
-            usermod -a -G docker ec2-user
+            curl -X GET -fSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz -o /tmp/docker.tgz ;\ 
+            tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
           "
-#         run: |
-#           docker exec runner-base sh -c "
-#             curl -X GET -fSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz -o /tmp/docker.tgz ;\ 
-#             tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
-#           "
 
       - run: docker ps -a
       - run: docker exec runner-base /usr/bin/env
