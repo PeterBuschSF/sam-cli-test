@@ -5,7 +5,7 @@ on:
 
 jobs:
   aws-sam-test:
-    if: ${{ falase }}
+    if: ${{ false }}
     name: Test AWS SAM CLI from Github's ubuntu-latest
     runs-on: ubuntu-latest
     steps:
@@ -16,7 +16,7 @@ jobs:
       - run: sleep 10 && curl http://localhost:3000/hello
 
   aws-sam-dind:
-    if: ${{ falase }}
+    if: ${{ false }}
     name: Test AWS SAM CLI from ubuntu using Docker in Docker
     runs-on: ubuntu-latest
     steps:
