@@ -154,7 +154,7 @@ jobs:
           
       - name: Install Docker
         run: |
-          docker exec runner-base sh -c "
+          docker exec runner-base sh -c "\
             curl -X GET -fSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz -o /tmp/docker.tgz ;\ 
             tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
           "
@@ -177,8 +177,9 @@ jobs:
           "cd sam-app && sam local invoke HelloWorldFunction -e events/event.json"
 
       - name: sam local start-api
-        run: docker exec runner-base sh -c \
-          'cd sam-app && sam local start-api > /dev/null 2>&1 &'
-      
-      - run: docker exec runner-base sh -c 'docker ps -a'
-      - run: docker exec runner-base sh -c 'sleep 10 && curl -fSL http://docker:3000/hello'
+        run: docker exec runner-base sh -c "\
+            cd sam-app ;\
+            sam local start-api > /dev/null 2>&1 & ;\
+            docker ps -a ;\
+            curl -fSL http://docker:3000/hello ;\
+          "
