@@ -23,7 +23,7 @@ jobs:
         run: |
           docker --version
 
-      - name: Docker IN Docker Setup
+      - name: Docker-In-Docker Setup
         run: |
           docker pull -q ubuntu
           docker pull -q docker:dind
@@ -31,7 +31,7 @@ jobs:
           docker volume create some-docker-certs-ca
           docker volume create some-docker-certs-client 
       
-      - name: Run dind
+      - name: Run Docker-In-Docker Container
         run: |
           docker run --privileged --name docker-dind -d \
             --network some-network --network-alias docker \
@@ -42,10 +42,10 @@ jobs:
           sleep 10
           docker logs --tail=3 docker-dind
 
-      - name: Run docker-base
+      - name: Run runner-base Container
         run: |
-          docker run --name docker-base -d -t \
-            --network some-network --network-alias docker-base \
+          docker run --name runner-base -d -t \
+            --network some-network --network-alias runner-base \
             -e DOCKER_TLS_CERTDIR=/certs \
             -e DOCKER_CERT_PATH=/certs/client \
             -e DOCKER_HOST=tcp://docker:2376 \
@@ -55,30 +55,31 @@ jobs:
           
       - name: Install Packages
         run: |
-          docker exec docker-base sh -c "
+          docker exec runner-base sh -c "
             apt-get update --quiet ;\
             apt-get -y install --no-install-recommends \
               ca-certificates \
               curl \
-              unzip ;\
+              unzip \
+              git ;\
             update-ca-certificates ;\
           "
 
       - name: Install Docker
         run: |
-          docker exec docker-base sh -c "
+          docker exec runner-base sh -c "
             curl -X GET -fSL https://download.docker.com/linux/static/stable/x86_64/docker-20.10.22.tgz -o /tmp/docker.tgz ;\ 
             tar -x --strip-components 1 --directory /usr/local/bin/ -f /tmp/docker.tgz ;\
           "
 
       - run: docker ps -a
-      - run: docker exec docker-base /usr/bin/env
-      - run: docker exec docker-base docker version
-      - run: docker exec docker-base docker context list
+      - run: docker exec runner-base /usr/bin/env
+      - run: docker exec runner-base docker version
+      - run: docker exec runner-base docker context list
 
       - name: Install AWS CLI
         run: |
-          docker exec docker-base sh -c "\
+          docker exec runner-base sh -c "\
             curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip ;\
             unzip -q awscliv2.zip -d . ;\
             ./aws/install ;\
@@ -87,7 +88,7 @@ jobs:
 
       - name: Install SAM CLI
         run: |
-          docker exec docker-base sh -c "\
+          docker exec runner-base sh -c "\
             curl -fSL https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip -o samcli.zip ;\
             unzip -q samcli.zip -d sam-installation ;\
             sam-installation/install ;\
@@ -95,18 +96,17 @@ jobs:
           "
 
       - name: sam init
-        run: docker exec docker-base sh -c \
+        run: docker exec runner-base sh -c \
           "sam init --no-interactive --name sam-app --runtime python3.9 --dependency-manager pip --app-template hello-world"
 
       - name: sam build --use-container
-        run: docker exec docker-base sh -c \
+        run: docker exec runner-base sh -c \
           "cd sam-app && sam build --use-container --debug"
 
       - name: sam local invoke
-        run: docker exec docker-base sh -c \
+        run: docker exec runner-base sh -c \
           "cd sam-app && sam local invoke HelloWorldFunction -e events/event.json"
 
       - name: sam local generate-event
-        run: docker exec docker-base sh -c \
+        run: docker exec runner-base sh -c \
           'cd sam-app && sam local generate-event apigateway aws-proxy --body "" --path "hello" --method GET'
-          
