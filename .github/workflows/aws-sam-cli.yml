@@ -178,10 +178,8 @@ jobs:
           "cd sam-app && sam local invoke HelloWorldFunction -e events/event.json"
 
       - name: sam local start-api
-        run: |
-          docker exec runner-base sh -c "\
-            cd sam-app ;\
-            sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER > /dev/null 2>&1 & ;\
-            docker ps -a ;\
-            curl -fSL http://docker:3000/hello ;\
-          "
+        run: docker exec runner-base sh -c \
+          "cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER > /dev/null 2>&1 &"
+      
+      - run : docker exec runner-base sh -c "docker ps -a"
+      - run : docker exec runner-base sh -c "curl -fSL http://docker:3000/hello"
