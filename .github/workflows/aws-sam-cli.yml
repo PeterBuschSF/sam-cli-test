@@ -177,176 +177,158 @@ jobs:
       - run: docker exec runner-base /usr/bin/env
       - run: docker exec runner-base docker version
       - run: docker exec runner-base docker context list
+      - run: docker exec runner-base sam --version
+      - run: docker exec runner-base sam --info
 
       - name: sam init
         run: docker exec runner-base sh -c \
           "sam init --no-interactive --name sam-app --runtime python3.9 --dependency-manager pip --app-template hello-world"
 
-      - name: sam build --use-container
-        run: docker exec runner-base sh -c \
-          "cd sam-app && sam build --use-container --debug"
+      # - name: sam build --use-container
+      #   run: docker exec runner-base sh -c \
+      #     "cd sam-app && sam build --use-container --debug"
 
-      - run: docker exec runner-base sh -c "docker ps -a"
       - name: sam local invoke
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug \
           "
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+
+      - name: sam local invoke --container-host=localhost --container-host-interface=0.0.0.0
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=localhost --container-host-interface=0.0.0.0 \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=docker --container-host-interface=0.0.0.0
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=docker --container-host-interface=0.0.0.0 \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=127.0.0.1 --container-host-interface=0.0.0.0
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=127.0.0.1 --container-host-interface=0.0.0.0 \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=0.0.0.0 --container-host-interface=0.0.0.0
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=0.0.0.0 --container-host-interface=0.0.0.0 \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=localhost --container-host-interface=127.0.0.1
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=localhost --container-host-interface=127.0.0.1 \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=docker --container-host-interface=127.0.0.1
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=docker --container-host-interface=127.0.0.1 \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=127.0.0.1 --container-host-interface=127.0.0.1
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=127.0.0.1 --container-host-interface=127.0.0.1 \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=0.0.0.0 --container-host-interface=127.0.0.1
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=0.0.0.0 --container-host-interface=127.0.0.1 \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=localhost --container-host-interface=localhost
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=localhost --container-host-interface=localhost \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=docker --container-host-interface=localhost
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=docker --container-host-interface=localhost \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=127.0.0.1 --container-host-interface=localhost
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=127.0.0.1 --container-host-interface=localhost \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=0.0.0.0 --container-host-interface=localhost
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=0.0.0.0 --container-host-interface=localhost \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=localhost --container-host-interface=docker
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=localhost --container-host-interface=docker \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=docker --container-host-interface=docker
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=docker --container-host-interface=docker \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=127.0.0.1 --container-host-interface=docker
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=127.0.0.1 --container-host-interface=docker \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=0.0.0.0 --container-host-interface=docker
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=0.0.0.0 --container-host-interface=docker \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=localhost --container-host-interface=app
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=localhost --container-host-interface=app \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=docker --container-host-interface=app
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=docker --container-host-interface=app \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=127.0.0.1 --container-host-interface=app
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=127.0.0.1 --container-host-interface=app \
           "
 
-      - run: docker exec runner-base sh -c "docker ps -a"
-      - name: sam local invoke
+      - name: sam local invoke --container-host=0.0.0.0 --container-host-interface=app
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
