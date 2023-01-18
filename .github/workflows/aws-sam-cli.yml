@@ -119,7 +119,7 @@ jobs:
             curl --retry 2 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
           "
 
-     - name: sam local start-api
+     - name: sam local start-api-2
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
@@ -127,7 +127,7 @@ jobs:
             curl --retry 2 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
           "
       
-      - name: sam local start-api
+      - name: sam local start-api-3
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
