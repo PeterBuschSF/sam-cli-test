@@ -12,7 +12,7 @@ jobs:
       - run: sam init --no-interactive --name sam-app --runtime python3.9 --dependency-manager pip --app-template hello-world
       - run: cd sam-app && sam build --use-container --debug
       - run: cd sam-app && sam local invoke "HelloWorldFunction" -e events/event.json
-      - run: cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER >> $GITHUB_OUTPUT 2>&1 &
+      - run: cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER > $GITHUB_OUTPUT 2>&1 &
       - run: sleep 10 && curl http://localhost:3000/hello
       - run: docker ps -a
 
@@ -110,7 +110,7 @@ jobs:
 
       - name: sam local start-api
         run: docker exec runner-base sh -c \
-          'cd sam-app && sam local start-api >> $GITHUB_OUTPUT 2>&1 &'
+          'cd sam-app && sam local start-api > $GITHUB_OUTPUT 2>&1 &'
       
       - run: docker exec runner-base sh -c 'curl http://localhost:3000/hello'
 
@@ -178,7 +178,7 @@ jobs:
 
       - name: sam local start-api
         run: docker exec runner-base sh -c \
-          "cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER >> $GITHUB_OUTPUT 2>&1 &"
+          "cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER > $GITHUB_OUTPUT 2>&1 &"
       
       - run : docker exec runner-base sh -c "docker ps -a"
       - run : docker exec runner-base sh -c "curl -fSL http://localhost:3000/hello"
