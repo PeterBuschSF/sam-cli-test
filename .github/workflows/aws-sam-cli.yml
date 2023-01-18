@@ -108,9 +108,11 @@ jobs:
           "cd sam-app && sam build --use-container --debug"
 
       - name: sam local invoke
-        run: docker exec runner-base sh -c \
-          "cd sam-app ;\
-           sam local invoke HelloWorldFunction -e events/event.json --debug"
+        run: |
+          docker exec runner-base sh -c "\
+            cd sam-app ;\
+            sam local invoke HelloWorldFunction -e events/event.json --debug \
+          "
 
       - name: sam local start-api
         run: |
