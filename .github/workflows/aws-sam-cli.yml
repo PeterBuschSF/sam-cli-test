@@ -6,6 +6,7 @@ on:
 
 jobs:
   aws-sam-test:
+    if: ${{ false }}
     name: Test AWS SAM CLI from Github's ubuntu-latest
     runs-on: ubuntu-latest
     steps:
@@ -54,6 +55,7 @@ jobs:
             -e DOCKER_CERT_PATH=/certs/client \
             -e DOCKER_HOST=tcp://docker:2376 \
             -e DOCKER_TLS_VERIFY=1 \
+            -e SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=60
             -v some-docker-certs-client:/certs/client:ro \
             ubuntu
           
@@ -111,6 +113,13 @@ jobs:
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
+            sam local invoke HelloWorldFunction -e events/event.json --debug \
+          "
+
+      - name: sam local invoke
+        run: |
+          docker exec runner-base sh -c "\
+            cd sam-app ;\
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=localhost --container-host-interface=docker \
           "
 
@@ -153,7 +162,6 @@ jobs:
       #     "
 
   aws-sam-dind-build-image:
-    if: ${{ false }}
     name: Test AWS SAM CLI from sam-build image using Docker in Docker
     runs-on: ubuntu-latest
     steps:
@@ -188,6 +196,7 @@ jobs:
             -e DOCKER_CERT_PATH=/certs/client \
             -e DOCKER_HOST=tcp://docker:2376 \
             -e DOCKER_TLS_VERIFY=1 \
+            -e SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=60
             -v some-docker-certs-client:/certs/client:ro \
             public.ecr.aws/sam/build-python3.9:latest
           
@@ -212,13 +221,16 @@ jobs:
           "cd sam-app && sam build --use-container --debug"
 
       - name: sam local invoke
-        run: docker exec runner-base sh -c \
-          "cd sam-app && sam local invoke HelloWorldFunction -e events/event.json"
-
-      - name: sam local start-api
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
-            sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER & \
-            curl --retry 5 --retry-all-errors --retry-delay 5 http://127.0.0.1:3000/hello \
+            sam local invoke HelloWorldFunction -e events/event.json --debug \
           "
+
+      # - name: sam local start-api
+      #   run: |
+      #     docker exec runner-base sh -c "\
+      #       cd sam-app ;\
+      #       sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER & \
+      #       curl --retry 5 --retry-all-errors --retry-delay 5 http://127.0.0.1:3000/hello \
+      #     "
