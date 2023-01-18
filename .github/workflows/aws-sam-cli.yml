@@ -13,7 +13,7 @@ jobs:
       - run: sam init --no-interactive --name sam-app --runtime python3.9 --dependency-manager pip --app-template hello-world
       - run: cd sam-app && sam build --use-container --debug
       - run: cd sam-app && sam local invoke "HelloWorldFunction" -e events/event.json
-      - run: cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER --host localhost &
+      - run: cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER &
       - run: curl --retry 5 --retry-all-errors --retry-delay 5 http://localhost:3000/hello
       - run: docker ps -a
 
