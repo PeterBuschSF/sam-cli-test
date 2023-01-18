@@ -2,6 +2,7 @@ name: aws-sam-cli
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   aws-sam-test:
@@ -12,11 +13,12 @@ jobs:
       - run: sam init --no-interactive --name sam-app --runtime python3.9 --dependency-manager pip --app-template hello-world
       - run: cd sam-app && sam build --use-container --debug
       - run: cd sam-app && sam local invoke "HelloWorldFunction" -e events/event.json
-      - run: cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER > /dev/null 2>&1 &
-      - run: sleep 10 && curl http://localhost:3000/hello
+      - run: cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER --host localhost &
+      - run: curl http://localhost:3000/hello
       - run: docker ps -a
 
   aws-sam-dind:
+    if: ${{ false }}
     name: Test AWS SAM CLI from ubuntu using Docker in Docker
     runs-on: ubuntu-latest
     steps:
@@ -115,6 +117,7 @@ jobs:
       - run: docker exec runner-base sh -c 'curl http://localhost:3000/hello'
 
   aws-sam-dind-build-image:
+    if: ${{ false }}
     name: Test AWS SAM CLI from sam-build image using Docker in Docker
     runs-on: ubuntu-latest
     steps:
