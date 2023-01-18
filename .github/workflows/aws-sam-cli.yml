@@ -20,7 +20,6 @@ jobs:
           docker ps -a
 
   aws-sam-dind:
-    if: ${{ false }}
     name: Test AWS SAM CLI from ubuntu using Docker in Docker
     runs-on: ubuntu-latest
     steps:
@@ -113,13 +112,14 @@ jobs:
           "cd sam-app && sam local invoke HelloWorldFunction -e events/event.json"
 
       - name: sam local start-api
-        run: docker exec runner-base sh -c \
-          'cd sam-app && sam local start-api > /dev/null 2>&1 &'
-      
-      - run: docker exec runner-base sh -c 'curl http://localhost:3000/hello'
+        run: |
+          docker exec runner-base sh -c "
+            cd sam-app ;
+            sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER & ;
+            curl --retry 5 --retry-all-errors --retry-delay 5 http://localhost:3000/hello
+          "
 
   aws-sam-dind-build-image:
-    if: ${{ false }}
     name: Test AWS SAM CLI from sam-build image using Docker in Docker
     runs-on: ubuntu-latest
     steps:
@@ -182,8 +182,9 @@ jobs:
           "cd sam-app && sam local invoke HelloWorldFunction -e events/event.json"
 
       - name: sam local start-api
-        run: docker exec runner-base sh -c \
-          "cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER > /dev/null 2>&1 &"
-      
-      - run : docker exec runner-base sh -c "docker ps -a"
-      - run : docker exec runner-base sh -c "curl -fSL http://localhost:3000/hello"
+        run: |
+          docker exec runner-base sh -c "
+            cd sam-app ;
+            sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER & ;
+            curl --retry 5 --retry-all-errors --retry-delay 5 http://localhost:3000/hello
+          "
