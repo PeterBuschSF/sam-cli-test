@@ -55,7 +55,7 @@ jobs:
             -e DOCKER_CERT_PATH=/certs/client \
             -e DOCKER_HOST=tcp://docker:2376 \
             -e DOCKER_TLS_VERIFY=1 \
-            -e SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=60
+            -e SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=60 \
             -v some-docker-certs-client:/certs/client:ro \
             ubuntu
           
@@ -196,7 +196,7 @@ jobs:
             -e DOCKER_CERT_PATH=/certs/client \
             -e DOCKER_HOST=tcp://docker:2376 \
             -e DOCKER_TLS_VERIFY=1 \
-            -e SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=60
+            -e SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=60 \
             -v some-docker-certs-client:/certs/client:ro \
             public.ecr.aws/sam/build-python3.9:latest
           
