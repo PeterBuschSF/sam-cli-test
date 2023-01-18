@@ -111,7 +111,28 @@ jobs:
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
-            sam local invoke HelloWorldFunction -e events/event.json --debug \
+            sam local invoke HelloWorldFunction -e events/event.json --debug --container_host=localhost --container_host_interface=127.0.0.1 \
+          "
+
+      - name: sam local invoke
+        run: |
+          docker exec runner-base sh -c "\
+            cd sam-app ;\
+            sam local invoke HelloWorldFunction -e events/event.json --debug --container_host=docker --container_host_interface=127.0.0.1 \
+          "
+
+      - name: sam local invoke
+        run: |
+          docker exec runner-base sh -c "\
+            cd sam-app ;\
+            sam local invoke HelloWorldFunction -e events/event.json --debug --container_host=localhost --container_host_interface=0.0.0.0 \
+          "
+
+      - name: sam local invoke
+        run: |
+          docker exec runner-base sh -c "\
+            cd sam-app ;\
+            sam local invoke HelloWorldFunction -e events/event.json --debug --container_host=localhost --container_host_interface=docker \
           "
 
       - name: sam local start-api
