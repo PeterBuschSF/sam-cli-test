@@ -118,14 +118,14 @@ jobs:
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
-            sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=docker --container-host-interface=127.0.0.1 \
+            sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=localhost --container-host-interface=0.0.0.0 \
           "
 
       - name: sam local invoke
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
-            sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=localhost --container-host-interface=0.0.0.0 \
+            sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=localhost --container-host-interface=localhost \
           "
 
       - name: sam local invoke
@@ -135,15 +135,43 @@ jobs:
             sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=localhost --container-host-interface=docker \
           "
 
-      - name: sam local start-api
+      - name: sam local invoke
         run: |
           docker exec runner-base sh -c "\
-            export SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=5 ;\
             cd sam-app ;\
-            sam local start-api --debug & \
-            sleep 10 ;\
-            curl --retry 1 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
+            sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=docker --container-host-interface=127.0.0.1 \
           "
+
+      - name: sam local invoke
+        run: |
+          docker exec runner-base sh -c "\
+            cd sam-app ;\
+            sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=docker --container-host-interface=0.0.0.0 \
+          "
+
+      - name: sam local invoke
+        run: |
+          docker exec runner-base sh -c "\
+            cd sam-app ;\
+            sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=docker --container-host-interface=docker \
+          "
+
+      - name: sam local invoke
+        run: |
+          docker exec runner-base sh -c "\
+            cd sam-app ;\
+            sam local invoke HelloWorldFunction -e events/event.json --debug --container-host=docker --container-host-interface=localhost \
+          "
+
+      # - name: sam local start-api
+      #   run: |
+      #     docker exec runner-base sh -c "\
+      #       export SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=5 ;\
+      #       cd sam-app ;\
+      #       sam local start-api --debug & \
+      #       sleep 10 ;\
+      #       curl --retry 1 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
+      #     "
 
   aws-sam-dind-build-image:
     if: ${{ false }}
