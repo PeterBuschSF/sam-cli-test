@@ -126,7 +126,7 @@ jobs:
           docker exec runner-base sh -c "\
             export SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=5 ;\
             cd sam-app ;\
-            sam local start-api --container-host-interface=$DOCKER_HOST & \
+            sam local start-api --container-host-interface=test & \
             sleep 5 ;\
             curl --retry 2 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
           "
@@ -136,7 +136,7 @@ jobs:
           docker exec runner-base sh -c "\
             export SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=5 ;\
             cd sam-app ;\
-            sam local start-api --container-host=http:\\docker:2376 & \
+            sam local start-api --container-host=test & \
             sleep 5 ;\
             curl --retry 2 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
           "
@@ -146,7 +146,7 @@ jobs:
           docker exec runner-base sh -c "\
             export SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=5 ;\
             cd sam-app ;\
-            sam local start-api --container-host=http:\\docker:2376 --container-host-interface=$DOCKER_HOST & \
+            sam local start-api --container-host=test --container-host-interface=test & \
             sleep 5 ;\
             curl --retry 2 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
           "
