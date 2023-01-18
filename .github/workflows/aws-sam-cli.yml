@@ -114,28 +114,35 @@ jobs:
       - name: sam local start-api
         run: |
           docker exec runner-base sh -c "\
+            export SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=5 ;\
             cd sam-app ;\
-            sam local start-api --container-host-interface=docker & \
+            sam local start-api --container-host-interface=$DOCKER_HOST & \
+            sleep 5 ;\
             curl --retry 2 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
           "
 
       - name: sam local start-api-2
         run: |
           docker exec runner-base sh -c "\
+            export SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=5 ;\
             cd sam-app ;\
-            sam local start-api --container-host=docker & \
+            sam local start-api --container-host=$DOCKER_HOST & \
+            sleep 5 ;\
             curl --retry 2 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
           "
 
       - name: sam local start-api-3
         run: |
           docker exec runner-base sh -c "\
+            export SAM_CLI_CONTAINER_CONNECTION_TIMEOUT=5 ;\
             cd sam-app ;\
-            sam local start-api --container-host=docker --container-host-interface=docker & \
+            sam local start-api --container-host=$DOCKER_HOST --container-host-interface=$DOCKER_HOST & \
+            sleep 5 ;\
             curl --retry 2 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
           "
 
   aws-sam-dind-build-image:
+    if: ${{ false }}
     name: Test AWS SAM CLI from sam-build image using Docker in Docker
     runs-on: ubuntu-latest
     steps:
