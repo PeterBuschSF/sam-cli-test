@@ -14,7 +14,7 @@ jobs:
       - run: cd sam-app && sam build --use-container --debug
       - run: cd sam-app && sam local invoke "HelloWorldFunction" -e events/event.json
       - run: cd sam-app && sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER --host localhost &
-      - run: curl http://localhost:3000/hello
+      - run: curl --retry 5 --retry-all-errors --retry-delay 5 http://localhost:3000/hello
       - run: docker ps -a
 
   aws-sam-dind:
