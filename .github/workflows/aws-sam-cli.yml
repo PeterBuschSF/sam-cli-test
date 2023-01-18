@@ -115,7 +115,7 @@ jobs:
         run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
-            sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER & ;\
+            sam local start-api --container-host=$DOCKER_HOST --warm-containers EAGER & \
             curl --retry 5 --retry-all-errors --retry-delay 5 http://localhost:3000/hello \
           "
 
