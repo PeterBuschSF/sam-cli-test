@@ -120,7 +120,7 @@ jobs:
           "
 
      - name: sam local start-api-2
-        run: |
+       run: |
           docker exec runner-base sh -c "\
             cd sam-app ;\
             sam local start-api --container-host=docker & \
